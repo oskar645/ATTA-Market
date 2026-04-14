@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="ATTA Market — площадка объявлений с каталогом, сообщениями, поддержкой и публикацией новых объявлений."
+    />
+    <title>ATTA Market</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-block">
+          <div class="brand-mark">A</div>
+          <div>
+            <p class="eyebrow">Marketplace</p>
+            <h1>ATTA Market</h1>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <button class="nav-link is-active" data-section="catalog">Каталог</button>
+          <button class="nav-link" data-section="favorites">Избранное</button>
+          <button class="nav-link" data-section="messages">Сообщения</button>
+          <button class="nav-link" data-section="profile">Профиль</button>
+        </nav>
+
+        <div class="sidebar-downloads">
+          <a class="store-badge" href="https://www.apple.com/app-store/" target="_blank" rel="noreferrer">
+            <span class="store-badge-icon">Apple</span>
+            <span class="store-badge-text">
+              <small>Скачать</small>
+              <strong>App Store</strong>
+            </span>
+          </a>
+          <a class="store-badge" href="https://play.google.com/store" target="_blank" rel="noreferrer">
+            <span class="store-badge-icon">Play</span>
+            <span class="store-badge-text">
+              <small>Скачать</small>
+              <strong>Google Play</strong>
+            </span>
+          </a>
+        </div>
+
+        <div class="sidebar-meta">
+          <button class="sidebar-meta-link" type="button" data-open-info="rules">Правила</button>
+          <button class="sidebar-meta-link" type="button" data-open-info="privacy">Конфиденциальность</button>
+          <p class="sidebar-meta-copy">
+            © 13.04.2026 ATTA Market<br />
+            Developer: Dagalaev Mansur Anzorovich<br />
+            ИНН: 000000000000
+          </p>
+        </div>
+      </aside>
+
+      <button class="sidebar-backdrop" id="sidebarBackdrop" aria-label="Закрыть меню"></button>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <button class="mobile-menu-button" id="mobileMenuButton" aria-label="Открыть меню">☰</button>
+          <div class="search-wrap">
+            <input
+              id="globalSearch"
+              type="search"
+              placeholder="Поиск по объявлениям, маркам, моделям и категориям"
+            />
+          </div>
+          <div class="topbar-actions">
+            <button class="ghost-button" id="notificationsButton">Уведомления</button>
+            <button class="ghost-button" id="openAddListingButton">Разместить</button>
+            <button class="solid-button" id="openAuthButton">Войти</button>
+          </div>
+        </header>
+
+        <section class="catalog-section" id="catalogSection">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Каталог</p>
+              <h3>Объявления</h3>
+            </div>
+            <span class="section-note" id="resultsCounter">0 результатов</span>
+          </div>
+
+          <div class="filters-bar">
+            <label>
+              <span>Категория</span>
+              <select id="categoryFilter">
+                <option value="all">Все категории</option>
+                <option value="Авто">Авто</option>
+                <option value="Недвижимость">Недвижимость</option>
+                <option value="Электроника">Электроника</option>
+                <option value="Работа">Работа</option>
+                <option value="Услуги">Услуги</option>
+                <option value="Личные вещи">Личные вещи</option>
+                <option value="Для дома и дачи">Для дома и дачи</option>
+                <option value="Хобби и отдых">Хобби и отдых</option>
+                <option value="Животные">Животные</option>
+                <option value="Запчасти">Запчасти</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Город</span>
+              <select id="cityFilter">
+                <option value="all">Все города</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Цена до</span>
+              <input id="priceFilter" type="number" min="0" placeholder="Например 300000" />
+            </label>
+
+            <button class="ghost-button" id="resetFiltersButton">Сбросить</button>
+          </div>
+
+          <div class="cards-grid" id="listingGrid"></div>
+          <div class="catalog-more">
+            <button class="ghost-button" id="loadMoreButton">Показать ещё</button>
+          </div>
+        </section>
+
+        <section class="split-panels">
+          <article class="panel-card" id="favoritesSection">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Личный раздел</p>
+                <h3>Избранное</h3>
+              </div>
+              <button class="ghost-button" data-section="favorites">Открыть вкладку</button>
+            </div>
+            <div class="mini-list" id="favoritesList"></div>
+          </article>
+
+          <article class="panel-card messages-panel" id="messagesSection">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Общение</p>
+                <h3>Сообщения</h3>
+              </div>
+              <button class="ghost-button" data-section="messages">Все чаты</button>
+            </div>
+
+            <div class="chat-layout">
+              <div class="chat-thread-list" id="messagesList"></div>
+              <div class="chat-window">
+                <div class="chat-window-head">
+                  <strong id="activeChatName">Выберите чат</strong>
+                  <span id="activeChatHint">Нажмите «Написать» в карточке объявления</span>
+                </div>
+                <div class="chat-messages" id="activeChatMessages"></div>
+                <form id="chatComposer" class="chat-composer">
+                  <input id="chatInput" type="text" placeholder="Напишите сообщение" required />
+                  <button class="solid-button" type="submit">Отправить</button>
+                </form>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="support-panel" id="supportSection">
+          <div class="support-banner">Служба поддержки</div>
+
+          <div class="support-layout">
+            <article class="support-card">
+              <div class="section-head">
+                <div>
+                  <p class="eyebrow">Поддержка</p>
+                  <h3>Напишите о проблеме</h3>
+                </div>
+              </div>
+              <form id="supportForm" class="stack-form">
+                <label>
+                  <span>Наш email</span>
+                  <input id="supportEmail" type="email" value="dagalaev9588@gmail.com" readonly />
+                </label>
+                <label>
+                  <span>Что случилось</span>
+                  <textarea
+                    id="supportMessage"
+                    rows="6"
+                    placeholder="Опишите проблему, вопрос или пожелание"
+                    required
+                  ></textarea>
+                </label>
+                <button class="solid-button" type="submit">Отправить</button>
+              </form>
+            </article>
+
+            <article class="support-card" id="downloadSection">
+              <div class="section-head">
+                <div>
+                  <p class="eyebrow">Приложение</p>
+                  <h3>Скачать ATTA Market</h3>
+                </div>
+              </div>
+              <p class="hero-text">
+                Кнопки ниже открывают магазины приложений. Позже сюда можно поставить точные ссылки на ваши
+                опубликованные приложения.
+              </p>
+              <div class="store-buttons">
+                <a class="store-badge" href="https://www.apple.com/app-store/" target="_blank" rel="noreferrer">
+                  <span class="store-badge-icon">Apple</span>
+                  <span class="store-badge-text">
+                    <small>Доступно в</small>
+                    <strong>App Store</strong>
+                  </span>
+                </a>
+                <a class="store-badge" href="https://play.google.com/store" target="_blank" rel="noreferrer">
+                  <span class="store-badge-icon">Play</span>
+                  <span class="store-badge-text">
+                    <small>Доступно в</small>
+                    <strong>Google Play</strong>
+                  </span>
+                </a>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <section class="drawer hidden" id="detailsDrawer" aria-hidden="true">
+      <div class="drawer-backdrop" data-close-drawer></div>
+      <div class="drawer-panel">
+        <button class="drawer-close" data-close-drawer>×</button>
+        <div id="detailsContent"></div>
+      </div>
+    </section>
+
+    <section class="drawer hidden" id="profileDrawer" aria-hidden="true">
+      <div class="drawer-backdrop" data-close-profile></div>
+      <div class="drawer-panel slim">
+        <button class="drawer-close" data-close-profile>←</button>
+        <div class="profile-card">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Аккаунт</p>
+              <h3>Профиль</h3>
+            </div>
+          </div>
+          <div class="profile-hero">
+            <div class="profile-avatar" id="profileAvatar">A</div>
+            <div>
+              <strong id="profileName">Гость</strong>
+              <p id="profileEmail">Войдите, чтобы увидеть профиль</p>
+            </div>
+          </div>
+          <div class="profile-fields">
+            <div class="mini-item">
+              <strong>Телефон</strong>
+              <p id="profilePhone">Не указан</p>
+            </div>
+            <div class="mini-item">
+              <strong>Мои объявления</strong>
+              <p id="profileListingsCount">0</p>
+            </div>
+            <div class="mini-item">
+              <strong>Статус</strong>
+              <p id="profileStatus">Гостевой режим</p>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="ghost-button" id="profileChangePasswordButton">Изменить пароль</button>
+            <button class="ghost-button" id="profileChangePhoneButton">Изменить номер</button>
+            <button class="solid-button hidden" id="signOutButton">Выйти</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="modal hidden" id="imageModal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-image></div>
+      <div class="image-modal-card">
+        <button class="drawer-close image-close" data-close-image>×</button>
+        <img id="fullscreenImage" class="fullscreen-image" alt="Фото объявления" />
+      </div>
+    </section>
+
+    <section class="drawer hidden" id="notificationsDrawer" aria-hidden="true">
+      <div class="drawer-backdrop" data-close-notifications></div>
+      <div class="drawer-panel slim">
+        <button class="drawer-close" data-close-notifications>×</button>
+        <h3>Уведомления</h3>
+        <div class="notification-list" id="notificationsList"></div>
+      </div>
+    </section>
+
+    <section class="modal hidden" id="authModal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-auth></div>
+      <div class="modal-card">
+        <button class="drawer-close" data-close-auth>×</button>
+        <h3>Вход в аккаунт</h3>
+        <form id="authForm" class="stack-form">
+          <label>
+            <span>Email</span>
+            <input type="email" id="authEmail" placeholder="you@example.com" required />
+          </label>
+          <label>
+            <span>Пароль</span>
+            <input type="password" id="authPassword" placeholder="••••••••" required />
+          </label>
+          <button class="solid-button" type="submit">Войти</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="modal hidden" id="listingModal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-listing></div>
+      <div class="modal-card wide">
+        <button class="drawer-close" data-close-listing>×</button>
+        <h3>Новое объявление</h3>
+        <form id="listingForm" class="stack-form grid-form">
+          <label>
+            <span>Название</span>
+            <input id="listingTitle" type="text" required />
+          </label>
+          <label>
+            <span>Категория</span>
+            <select id="listingCategory" required>
+              <option value="Авто">Авто</option>
+              <option value="Недвижимость">Недвижимость</option>
+              <option value="Электроника">Электроника</option>
+              <option value="Работа">Работа</option>
+              <option value="Услуги">Услуги</option>
+              <option value="Личные вещи">Личные вещи</option>
+              <option value="Для дома и дачи">Для дома и дачи</option>
+              <option value="Хобби и отдых">Хобби и отдых</option>
+              <option value="Животные">Животные</option>
+              <option value="Запчасти">Запчасти</option>
+            </select>
+          </label>
+          <label>
+            <span>Город</span>
+            <input id="listingCity" type="text" required />
+          </label>
+          <label>
+            <span>Цена</span>
+            <input id="listingPrice" type="number" min="0" required />
+          </label>
+          <label>
+            <span>Год</span>
+            <input id="listingYear" type="number" min="1950" max="2035" placeholder="Например 2020" />
+          </label>
+          <label>
+            <span>Состояние</span>
+            <select id="listingCondition">
+              <option value="Отличное">Отличное</option>
+              <option value="Хорошее">Хорошее</option>
+              <option value="Требует внимания">Требует внимания</option>
+              <option value="Битый">Битый</option>
+              <option value="Не битый">Не битый</option>
+            </select>
+          </label>
+          <label>
+            <span>Привод</span>
+            <select id="listingDrive">
+              <option value="Полный">Полный</option>
+              <option value="Передний">Передний</option>
+              <option value="Задний">Задний</option>
+              <option value="Не указан">Не указан</option>
+            </select>
+          </label>
+          <label>
+            <span>КПП</span>
+            <select id="listingTransmission">
+              <option value="Автомат">Автомат</option>
+              <option value="Механика">Механика</option>
+              <option value="Вариатор">Вариатор</option>
+              <option value="Робот">Робот</option>
+            </select>
+          </label>
+          <label>
+            <span>Топливо</span>
+            <select id="listingFuel">
+              <option value="Бензин">Бензин</option>
+              <option value="Дизель">Дизель</option>
+              <option value="Гибрид">Гибрид</option>
+              <option value="Электро">Электро</option>
+              <option value="Газ">Газ</option>
+            </select>
+          </label>
+          <label>
+            <span>Пробег, км</span>
+            <input id="listingMileage" type="number" min="0" placeholder="Например 85000" />
+          </label>
+          <label>
+            <span>Кузов / тип</span>
+            <input id="listingBody" type="text" placeholder="Седан, кроссовер, квартира, смартфон" />
+          </label>
+          <label>
+            <span>Цвет</span>
+            <input id="listingColor" type="text" placeholder="Белый, чёрный, серебристый" />
+          </label>
+          <label class="full-width">
+            <span>Описание</span>
+            <textarea id="listingDescription" rows="4" required></textarea>
+          </label>
+          <label class="full-width upload-field">
+            <span>Фото</span>
+            <input id="listingImage" type="file" accept="image/*" />
+            <small id="listingImageHint">Выберите фото с телефона или компьютера</small>
+          </label>
+          <button class="solid-button full-width" type="submit">Опубликовать объявление</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="modal hidden" id="infoModal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-info></div>
+      <div class="modal-card">
+        <button class="drawer-close" data-close-info>×</button>
+        <h3 id="infoModalTitle">Информация</h3>
+        <div class="info-copy" id="infoModalContent"></div>
+      </div>
+    </section>
+
+    <div class="toast-stack" id="toastStack"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="site-supabase.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
