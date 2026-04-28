@@ -243,6 +243,13 @@ a {
   background: var(--surface-strong);
 }
 
+.mobile-categories-button,
+.mobile-support-button,
+.mobile-auth-button,
+.mobile-sidebar-actions {
+  display: none;
+}
+
 .search-wrap {
   flex: 1;
 }
@@ -959,10 +966,34 @@ input[readonly] {
     place-items: center;
   }
 
+  .mobile-categories-button,
+  .mobile-support-button,
+  .mobile-auth-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 12px;
+    font-size: 0.88rem;
+    white-space: nowrap;
+  }
+
   .topbar {
     position: sticky;
     top: 10px;
     z-index: 10;
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+
+  .topbar .search-wrap {
+    order: 5;
+    flex: 1 0 100%;
+  }
+
+  .mobile-sidebar-actions {
+    display: grid;
+    gap: 8px;
   }
 
   .brand-title {
@@ -970,6 +1001,10 @@ input[readonly] {
   }
 
   .topbar-actions {
+    display: none;
+  }
+
+  .filters-bar label:first-child {
     display: none;
   }
 
@@ -988,6 +1023,10 @@ input[readonly] {
 }
 
 @media (max-width: 640px) {
+  body {
+    overflow-x: hidden;
+  }
+
   .main-panel {
     padding: 12px;
   }
@@ -1012,11 +1051,74 @@ input[readonly] {
   }
 
   .listing-card {
-    grid-template-columns: 110px minmax(0, 1fr);
+    grid-template-columns: 94px minmax(0, 1fr);
+    border-radius: 14px;
   }
 
   .listing-card-media {
-    min-height: 110px;
+    min-height: 94px;
+  }
+
+  .listing-card-body {
+    padding: 8px 9px;
+  }
+
+  .listing-meta {
+    font-size: 0.71rem;
+  }
+
+  .listing-card h4 {
+    margin: 4px 0 3px;
+    font-size: 0.8rem;
+    line-height: 1.25;
+  }
+
+  .listing-price {
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+  }
+
+  .listing-specs {
+    gap: 4px;
+    margin-bottom: 5px;
+  }
+
+  .listing-specs span,
+  .meta-pill {
+    padding: 4px 7px;
+    font-size: 0.66rem;
+  }
+
+  .listing-description {
+    font-size: 0.7rem;
+    line-height: 1.28;
+  }
+
+  .listing-actions {
+    margin-top: 6px;
+    gap: 6px;
+  }
+
+  .listing-actions .ghost-button,
+  .listing-actions .solid-button {
+    min-height: 30px;
+    padding: 0 10px;
+    font-size: 0.72rem;
+  }
+
+  .listing-badge {
+    top: 9px;
+    left: 9px;
+    padding: 4px 7px;
+    font-size: 0.62rem;
+  }
+
+  .listing-favorite {
+    top: 9px;
+    right: 9px;
+    width: 30px;
+    height: 30px;
+    font-size: 0.82rem;
   }
 
   .support-layout {
@@ -1029,5 +1131,9 @@ input[readonly] {
 
   .store-badge {
     width: 100%;
+  }
+
+  .mobile-support-button {
+    display: none;
   }
 }

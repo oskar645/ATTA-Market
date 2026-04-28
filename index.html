@@ -29,6 +29,13 @@
           <button class="nav-link" data-section="profile">Профиль</button>
         </nav>
 
+        <div class="mobile-sidebar-actions">
+          <button class="ghost-button" id="mobileSidebarCategoriesButton" type="button">Категории</button>
+          <button class="ghost-button" id="mobileSidebarAddButton" type="button">Разместить</button>
+          <button class="solid-button" id="mobileSidebarAuthButton" type="button">Войти</button>
+          <button class="ghost-button" id="mobileSidebarSupportButton" type="button">Поддержка</button>
+        </div>
+
         <div class="sidebar-downloads">
           <a class="store-badge" href="https://www.apple.com/app-store/" target="_blank" rel="noreferrer">
             <span class="store-badge-icon">Apple</span>
@@ -62,6 +69,9 @@
       <main class="main-panel">
         <header class="topbar">
           <button class="mobile-menu-button" id="mobileMenuButton" aria-label="Открыть меню">☰</button>
+          <button class="solid-button mobile-auth-button" id="mobileAuthButton" type="button">Войти</button>
+          <button class="ghost-button mobile-categories-button" id="mobileCategoriesButton" type="button">Категории</button>
+          <button class="ghost-button mobile-support-button" id="mobileSupportButton" type="button">Поддержка</button>
           <div class="search-wrap">
             <input
               id="globalSearch"
@@ -416,6 +426,23 @@
         <button class="drawer-close" data-close-info>×</button>
         <h3 id="infoModalTitle">Информация</h3>
         <div class="info-copy" id="infoModalContent"></div>
+      </div>
+    </section>
+
+    <section class="modal hidden" id="categoriesModal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-categories></div>
+      <div class="modal-card">
+        <button class="drawer-close" data-close-categories>×</button>
+        <h3>Категории</h3>
+        <div class="mini-list">
+          <button class="ghost-button" type="button" data-mobile-category="all">Все категории</button>
+          <button class="ghost-button" type="button" data-mobile-category="Авто">Авто</button>
+          <button class="ghost-button" type="button" data-mobile-category="Недвижимость">Недвижимость</button>
+          <button class="ghost-button" type="button" data-mobile-category="Электроника">Электроника</button>
+          <button class="ghost-button" type="button" data-mobile-category="Работа">Работа</button>
+          <button class="ghost-button" type="button" data-mobile-category="Услуги">Услуги</button>
+          <button class="ghost-button" type="button" data-mobile-category="Личные вещи">Личные вещи</button>
+        </div>
       </div>
     </section>
 

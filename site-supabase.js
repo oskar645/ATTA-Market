@@ -247,17 +247,27 @@
       return normalizeProfile(authUser, profile);
     },
     async loadListings() {
-      const rows = await safeQuery(
-        () =>
-          client
-            .from(config.tables.listings)
+      const listingTables = [...new Set([config.tables.listings, "listings", "atta_site_listings", "atta_listings"].filter(Boolean))];
+
+      for (const tableName of listingTables) {
+        if (!client) break;
+        try {
+          const { data, error } = await client
+            .from(tableName)
             .select("*")
             .eq("status", "active")
             .order("created_at", { ascending: false })
-            .limit(100),
-        [],
-      );
-      return rows.map(normalizeListing);
+            .limit(100);
+
+          if (!error) {
+            return (data || []).map(normalizeListing);
+          }
+        } catch {
+          // Continue with next table candidate.
+        }
+      }
+
+      return [];
     },
     async createListing(listing) {
       if (!client) return { ok: false };
