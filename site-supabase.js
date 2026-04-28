@@ -96,6 +96,27 @@
     return [...new Set(items)];
   }
 
+  function normalizeListingStatus(row) {
+    const statusRaw = normalizeText(
+      firstValue(row, ["status", "listing_status", "state", "moderation_status"], ""),
+      "",
+    )
+      .toLowerCase()
+      .trim();
+
+    const isActiveFlag = firstValue(row, ["is_active", "active"], null);
+    const isPublishedFlag = firstValue(row, ["is_published", "published"], null);
+    const truthyFlags = [isActiveFlag, isPublishedFlag].some((v) => v === true || v === 1 || v === "1");
+
+    if (truthyFlags) return "active";
+
+    if (["active", "approved", "published", "visible", "enabled", "open"].includes(statusRaw)) {
+      return "active";
+    }
+
+    return statusRaw || "inactive";
+  }
+
   function normalizeListing(row) {
     const car = row?.car && typeof row.car === "object" ? row.car : {};
     const directImage = toAbsoluteImage(
@@ -126,7 +147,7 @@
       image: gallery[0] || fallbackImage,
       gallery,
       description: normalizeText(firstValue(row, ["description", "body", "text"], ""), ""),
-      status: normalizeText(firstValue(row, ["status"], "active"), "active"),
+      status: normalizeListingStatus(row),
       phone: normalizeText(firstValue(row, ["phone", "phone_number", "contact_phone"], "+79990000000"), "+79990000000"),
       year: Number(firstValue(car, ["year"], firstValue(row, ["year"], new Date().getFullYear()))),
       condition: normalizeText(firstValue(car, ["condition"], firstValue(row, ["condition"], "Не указано")), "Не указано"),
@@ -248,22 +269,66 @@
     },
     async loadListings() {
       const listingTables = [...new Set([config.tables.listings, "listings", "atta_site_listings", "atta_listings"].filter(Boolean))];
+      const activeStatuses = ["active", "approved", "published", "visible", "enabled", "open"];
 
       for (const tableName of listingTables) {
         if (!client) break;
-        try {
-          const { data, error } = await client
-            .from(tableName)
-            .select("*")
-            .eq("status", "active")
-            .order("created_at", { ascending: false })
-            .limit(100);
 
-          if (!error) {
-            return (data || []).map(normalizeListing);
+        const queryVariants = [
+          () =>
+            client
+              .from(tableName)
+              .select("*")
+              .in("status", activeStatuses)
+              .order("created_at", { ascending: false })
+              .limit(200),
+          () =>
+            client
+              .from(tableName)
+              .select("*")
+              .in("listing_status", activeStatuses)
+              .order("created_at", { ascending: false })
+              .limit(200),
+          () =>
+            client
+              .from(tableName)
+              .select("*")
+              .in("state", activeStatuses)
+              .order("created_at", { ascending: false })
+              .limit(200),
+          () =>
+            client
+              .from(tableName)
+              .select("*")
+              .eq("is_active", true)
+              .order("created_at", { ascending: false })
+              .limit(200),
+          () =>
+            client
+              .from(tableName)
+              .select("*")
+              .eq("active", true)
+              .order("created_at", { ascending: false })
+              .limit(200),
+          () =>
+            client
+              .from(tableName)
+              .select("*")
+              .order("created_at", { ascending: false })
+              .limit(200),
+        ];
+
+        for (const runQuery of queryVariants) {
+          try {
+            const { data, error } = await runQuery();
+            if (error) continue;
+
+            const normalized = (data || []).map(normalizeListing);
+            const onlyActive = normalized.filter((item) => String(item.status).toLowerCase() === "active");
+            return onlyActive;
+          } catch {
+            // Continue with next query/table candidate.
           }
-        } catch {
-          // Continue with next table candidate.
         }
       }
 
