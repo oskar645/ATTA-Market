@@ -3,11 +3,16 @@
     url: "https://molsaoepvgbnfwbwldqv.supabase.co",
     anonKey: "sb_publishable_dAhJXoA5cHBPLEuuhVnAwA_Dnivnkmi",
     storageBucket: "listing-photos",
+    supportEmail: "dagalaev9588@gmail.com",
+    functions: {
+      support: "send-support-email",
+    },
     tables: {
       listings: "listings",
       chats: "chats",
       messages: "chat_messages",
       profiles: "users",
+      supportRequests: "support_requests",
     },
   };
 
@@ -20,6 +25,10 @@
     tables: {
       ...defaultConfig.tables,
       ...((global.ATTA_SUPABASE_CONFIG && global.ATTA_SUPABASE_CONFIG.tables) || {}),
+    },
+    functions: {
+      ...defaultConfig.functions,
+      ...((global.ATTA_SUPABASE_CONFIG && global.ATTA_SUPABASE_CONFIG.functions) || {}),
     },
   };
 
@@ -455,6 +464,83 @@
         return { ok: true };
       } catch (error) {
         return { ok: false, error };
+      }
+    },
+    async submitSupportRequest(payload) {
+      const message = normalizeText(payload?.message, "");
+      const email = normalizeText(payload?.email, "");
+      const name = normalizeText(payload?.name, "");
+
+      if (!message) {
+        return { ok: false, message: "Сообщение не заполнено" };
+      }
+
+      if (!client) {
+        return {
+          ok: false,
+          fallbackMailto: true,
+          supportEmail: config.supportEmail,
+          message: "Supabase не настроен",
+        };
+      }
+
+      try {
+        if (config.functions?.support) {
+          const { data, error } = await client.functions.invoke(config.functions.support, {
+            body: {
+              message,
+              email,
+              name,
+              supportEmail: config.supportEmail,
+              source: "website",
+            },
+          });
+
+          if (!error) {
+            return {
+              ok: true,
+              delivery: "function",
+              data,
+              supportEmail: config.supportEmail,
+            };
+          }
+        }
+
+        const { data: userData } = await client.auth.getUser();
+        const userId = userData?.user?.id || null;
+        const { error } = await client.from(config.tables.supportRequests).insert({
+          user_id: userId,
+          email,
+          name,
+          message,
+          support_email: config.supportEmail,
+          source: "website",
+          status: "new",
+        });
+
+        if (error) {
+          return {
+            ok: false,
+            error,
+            fallbackMailto: true,
+            supportEmail: config.supportEmail,
+            message: error.message || "Не удалось отправить обращение",
+          };
+        }
+
+        return {
+          ok: true,
+          delivery: "table",
+          supportEmail: config.supportEmail,
+        };
+      } catch (error) {
+        return {
+          ok: false,
+          error,
+          fallbackMailto: true,
+          supportEmail: config.supportEmail,
+          message: error?.message || "Не удалось отправить обращение",
+        };
       }
     },
   };
