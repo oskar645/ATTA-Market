@@ -126,7 +126,7 @@
       image: gallery[0] || fallbackImage,
       gallery,
       description: normalizeText(firstValue(row, ["description", "body", "text"], ""), ""),
-      status: normalizeText(firstValue(row, ["status"], "approved"), "approved"),
+      status: normalizeText(firstValue(row, ["status"], "active"), "active"),
       phone: normalizeText(firstValue(row, ["phone", "phone_number", "contact_phone"], "+79990000000"), "+79990000000"),
       year: Number(firstValue(car, ["year"], firstValue(row, ["year"], new Date().getFullYear()))),
       condition: normalizeText(firstValue(car, ["condition"], firstValue(row, ["condition"], "Не указано")), "Не указано"),
@@ -252,6 +252,7 @@
           client
             .from(config.tables.listings)
             .select("*")
+            .eq("status", "active")
             .order("created_at", { ascending: false })
             .limit(100),
         [],
